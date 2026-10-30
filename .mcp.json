@@ -1,0 +1,8 @@
+{
+	"mcpServers": {
+		"Verifone Documentation Portal": {
+			"type": "http",
+			"url": "https://docs.verifone.com/~gitbook/mcp/auth"
+		}
+	}
+}

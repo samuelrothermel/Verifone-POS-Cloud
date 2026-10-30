@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#eef2ef">
+    <title>Verifone POS Cloud | Sandbox Console</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <main class="console">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">VERIFONE POS CLOUD <span>LOCAL SANDBOX</span></p>
+          <h1>Terminal console</h1>
+        </div>
+        <p class="scope"><span id="terminal-name">P630</span><span id="serial-number">Loading terminal...</span></p>
+      </header>
+
+      <section class="status-row" aria-labelledby="status-heading">
+        <div class="state-mark" id="state-mark" aria-hidden="true"></div>
+        <div class="status-copy">
+          <h2 id="status-heading">Terminal status</h2>
+          <p id="status-message" role="status" aria-live="polite">Not checked yet</p>
+        </div>
+        <label class="terminal-picker" for="terminal-select">
+          Terminal
+          <select id="terminal-select">
+            <option value="p630">P630</option>
+            <option value="v660p">V660p</option>
+          </select>
+        </label>
+        <button class="button button-neutral" id="check-status" type="button">Check status</button>
+      </section>
+
+      <section class="operation-row" aria-labelledby="operation-heading">
+        <div class="operation-intro">
+          <p class="eyebrow">AVAILABLE REQUESTS</p>
+          <h2 id="operation-heading">Choose an operation</h2>
+        </div>
+        <div class="operation-action">
+          <div>
+            <p class="operation-name">Sale</p>
+            <p class="operation-detail">Selected terminal · Card-present · USD · $1.00</p>
+          </div>
+          <button class="button button-sale" id="prepare-sale" type="button" disabled>Review sale</button>
+        </div>
+        <p class="gate-note" id="gate-note">Choose a terminal and check its status. Sale testing is currently configured for the P630 only.</p>
+      </section>
+
+      <section class="transaction-status-row" aria-labelledby="transaction-status-heading">
+        <div>
+          <p class="eyebrow">READ-ONLY</p>
+          <h2 id="transaction-status-heading">Transaction status</h2>
+          <p class="operation-detail">Available after a sale attempt from this console.</p>
+        </div>
+        <div class="transaction-status-actions">
+          <button class="button button-neutral" id="check-transaction-status" type="button" disabled>Check transaction</button>
+          <button class="button button-neutral" id="start-another-sale" type="button" disabled>Start another sale</button>
+        </div>
+      </section>
+
+      <section class="response-section" aria-labelledby="response-heading">
+        <div class="response-heading">
+          <h2 id="response-heading">Response</h2>
+          <span id="response-kind">Waiting</span>
+        </div>
+        <pre id="response-body" tabindex="0">No request sent.</pre>
+      </section>
+
+      <footer>
+        <span>Credentials stay on this machine.</span>
+        <span>Retry after confirmed FAILURE · New sale requires explicit confirmation.</span>
+      </footer>
+    </main>
+
+    <dialog id="sale-dialog" aria-labelledby="sale-dialog-title">
+      <form method="dialog" class="confirm-sheet">
+        <p class="eyebrow">PHYSICAL CARD REQUIRED</p>
+        <h2 id="sale-dialog-title">Send a $1.00 USD sandbox sale?</h2>
+        <p>The selected terminal will prompt for a test card. Confirm the terminal and sandbox provider are ready before sending.</p>
+        <div class="dialog-actions">
+          <button class="button button-neutral" value="cancel">Cancel</button>
+          <button class="button button-sale" id="confirm-sale" type="button">Send sale</button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>

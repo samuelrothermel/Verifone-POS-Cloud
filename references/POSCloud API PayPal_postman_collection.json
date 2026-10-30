@@ -1,0 +1,674 @@
+{
+  "info": {
+    "_postman_id": "8138e28c-71c1-4fd4-b9ea-00102fdc2183",
+    "name": "PayPal",
+    "description": "This is a POS Cloud collection that covers the basic requests for POS Cloud integrators. For more details refer to the detailed POS Cloud reference documents [POS Cloud Integration](https://verifone.cloud/docs/in-store-payments/pos-cloud-integration)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "31038739"
+  },
+  "item": [
+    {
+      "name": "Device Status",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "description": "The type of message being sent",
+            "type": "text"
+          },
+          {
+            "key": "x-site-entity-id",
+            "value": "f83e3576-a45b-447b-8876-d4bd39744865",
+            "description": "This is the entity UUID. The organization under which the POI exists",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "url": {
+          "raw": "{{host-link}}/poscloud/nexo/status",
+          "host": [
+            "{{host-link}}"
+          ],
+          "path": [
+            "poscloud",
+            "nexo",
+            "status"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Last Txn Status",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let response = pm.response.json()\r",
+              "let saleData = response.TransactionStatusResponse.RepeatedMessageResponse.RepeatedResponseMessageBody.PaymentResponse.SaleData.SaleToPOIData\r",
+              "\r",
+              "if(saleData){\r",
+              "    let saleDataString = JSON.stringify(saleData).slice(1,-1)\r",
+              "    pm.globals.set(\"saleToPoiData\",saleDataString)\r",
+              "    console.log(pm.globals.get(\"saleToPoiData\"))\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "description": "The type of message being sent",
+            "type": "text"
+          },
+          {
+            "key": "x-site-entity-id",
+            "value": "{{x-vfi-entity-id}}",
+            "description": "This is the entity UUID. The organization under which the POI exists",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"MessageHeader\": {\r\n        \"MessageClass\": \"SERVICE\",\r\n        \"MessageCategory\": \"TRANSACTIONSTATUS\",\r\n        \"MessageType\": \"REQUEST\",\r\n        \"ServiceID\": \"{{x-vfi-service-id}}\",\r\n        \"SaleID\": \"{{x-vfi-sale-id}}\",\r\n        \"POIID\": \"{{x-vfi-poiUid}}\"\r\n    },\r\n    \"TransactionStatusRequest\": {\r\n        \"DocumentQualifier\": \"SALERECEIPT\"\r\n    }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{host-link}}/poscloud/nexo/v2/transactionstatus",
+          "host": [
+            "{{host-link}}"
+          ],
+          "path": [
+            "poscloud",
+            "nexo",
+            "v2",
+            "transactionstatus"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Transaction Report",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// let response = pm.response.json()\r",
+              "// let saleData = response.TransactionReportResponse.RepeatedMessageResponse.RepeatedResponseMessageBody.PaymentResponse.SaleData.SaleToPOIData\r",
+              "\r",
+              "// if(saleData){\r",
+              "//     let saleDataString = JSON.stringify(saleData).slice(1,-1)\r",
+              "//     pm.globals.set(\"saleToPoiData\",saleDataString)\r",
+              "//     console.log(pm.globals.get(\"saleToPoiData\"))\r",
+              "// }"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "description": "The type of message being sent",
+            "type": "text"
+          },
+          {
+            "key": "x-site-entity-id",
+            "value": "{{x-vfi-entity-id}}",
+            "description": "This is the entity UUID. The organization under which the POI exists",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"MessageHeader\": {\r\n        \"MessageClass\": \"SERVICE\",\r\n        \"MessageCategory\": \"TRANSACTIONSTATUS\",\r\n        \"MessageType\": \"REQUEST\",\r\n        \"ServiceID\": \"{{x-vfi-service-id}}\",\r\n        \"SaleID\": \"{{x-vfi-sale-id}}\",\r\n        \"POIID\": \"{{x-vfi-poiUid}}\"\r\n    },\r\n    \"TransactionReportRequest\": {\r\n        \"SearchCriterias\": {\r\n            \"SearchOR\": [\r\n                {\r\n                    \"SearchAND\": [\r\n                        {\r\n                            \"Target\": \"PaymentResponse/SaleData/SaleTransactionID/TransactionID\",\r\n                            \"Operator\": \"EQ\",\r\n                            \"Value\": \"217316809331\"\r\n                        }\r\n                    ]\r\n                }\r\n            ]\r\n        }\r\n    }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{host-link}}/poscloud/nexo/transactionReport",
+          "host": [
+            "{{host-link}}"
+          ],
+          "path": [
+            "poscloud",
+            "nexo",
+            "transactionReport"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Display",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "x-vfi-payment-host",
+            "value": "POS"
+          },
+          {
+            "key": "x-vfi-api-idempotencyKey",
+            "value": "{{x-vfi-api-idempotencyKey}}",
+            "type": "default"
+          },
+          {
+            "key": "x-site-entity-id",
+            "value": "{{x-vfi-entity-id}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"MessageHeader\": {\n        \"MessageClass\": \"SERVICE\", /* Do not change this for this request */\n        \"MessageCategory\": \"DISPLAY\", /* Do not change this for this request */\n        \"MessageType\": \"REQUEST\", /* Do not change this for this request */\n        \"ServiceID\": \"{{x-vfi-service-id}}\", /* Have it as any unique ID */\n        \"DeviceID\": \"{{x-vfi-service-id}}\",\n        \"SaleID\": \"{{x-vfi-sale-id}}\", /* Can have S/N or the POS/ECR or an ID */\n        \"POIID\": \"{{x-vfi-poiUid}}\" /* Got from Device Status API */\n    },\n    \"DisplayRequest\": {\n        \"DisplayOutput\": [\n            {\n                \"MinimumDisplayTime\": 0,\n                \"Device\": \"CashierDisplay\",\n                \"InfoQualify\": \"Status\",\n                \"OutputContent\": {\n                    \"OutputFormat\": \"MESSAGEREF\",\n                    \"OutputText\": [\n                        {\n                            \"Text\": \"ASHWIN PAYMENT\",\n                            \"CharacterSet\": 0,\n                            \"Font\": \"string\",\n                            \"StartRow\": 0,\n                            \"StartColumn\": 0,\n                            \"Color\": \"WHITE\",\n                            \"CharacterWidth\": \"SINGLEWIDTH\",\n                            \"CharacterHeight\": \"SINGLEHEIGHT\",\n                            \"CharacterStyle\": \"NORMAL\",\n                            \"Alignment\": \"LEFT\",\n                            \"EndOfLineFlag\": true\n                        }\n                    ]\n                }\n            }\n        ]\n    }\n}"
+        },
+        "url": {
+          "raw": "{{host-link}}/poscloud/nexo/display",
+          "host": [
+            "{{host-link}}"
+          ],
+          "path": [
+            "poscloud",
+            "nexo",
+            "display"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Abort",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "description": "The type of message being sent",
+            "type": "text"
+          },
+          {
+            "key": "x-site-entity-id",
+            "value": "{{x-vfi-entity-id}}",
+            "description": "This is the entity UUID. The organization under which the POI exists",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"MessageHeader\": {\r\n        \"MessageClass\": \"SERVICE\",\r\n        \"MessageCategory\": \"ABORT\",\r\n        \"MessageType\": \"REQUEST\",\r\n        \"ServiceID\": \"000001\",\r\n        \"SaleID\": \"{{x-vfi-sale-id}}\",\r\n        \"POIID\": \"{{x-vfi-poiUid}}\"\r\n    },\r\n    \"AbortRequest\": {\r\n        \"MessageReference\": {\r\n            \"SaleID\": \"{{x-vfi-sale-id}}\",\r\n            \"POIID\": \"{{x-vfi-poiUid}}\"\r\n        },\r\n        \"AbortReason\": \"CashierAborted\"\r\n    }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{host-link}}/poscloud/nexo/abort",
+          "host": [
+            "{{host-link}}"
+          ],
+          "path": [
+            "poscloud",
+            "nexo",
+            "abort"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Sale",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "//let response = pm.response.json()\r",
+              "//let saleData = response.PaymentResponse.SaleData.SaleToPOIData\r",
+              "\r",
+              "//if(saleData){\r",
+              "//    let saleDataString = JSON.stringify(saleData).slice(1,-1)\r",
+              "//    pm.globals.set(\"saleToPoiData\",saleDataString)\r",
+              "//    console.log(pm.globals.get(\"saleToPoiData\"))\r",
+              "//}\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "let referenceId = pm.environment.get(\"referenceId\")\r",
+              "console.log(\"referenceId = \" + referenceId)\r",
+              "pm.environment.set(\"referenceIdSaved\", referenceId)\r",
+              "console.log(\"referenceIdSaved = \" + pm.environment.get(\"referenceIdSaved\"))"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "strictSSL": false
+      },
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "description": "The type of message being sent",
+            "type": "text"
+          },
+          {
+            "key": "x-site-entity-id",
+            "value": "{{x-vfi-entity-id}}",
+            "description": "This is the entity UUID. The organization under which the POI exists",
+            "type": "text"
+          },
+          {
+            "key": "x-terminal-simulator",
+            "value": "true",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"MessageHeader\": {\r\n        \"MessageClass\": \"SERVICE\", /* Do not change this for this request */\r\n        \"MessageCategory\": \"PAYMENT\", /* Do not change this for this request */\r\n        \"MessageType\": \"REQUEST\", /* Do not change this for this request */\r\n        \"ServiceID\": \"{{x-vfi-service-id}}\", /* Have it as any unique ID */\r\n        \"SaleID\": \"{{x-vfi-sale-id}}\", /* Can have S/N or the POS/ECR or an ID */\r\n        \"POIID\": \"{{x-vfi-poiUid}}\" /* Got from Device Status API */\r\n    },\r\n    \"PaymentRequest\": {\r\n        \"SaleData\": {\r\n            \"OperatorID\": \"VERIFONE\", /* An optional field. Can have cashier ID */\r\n            \"SaleTransactionID\": {\r\n                \"TransactionID\": \"{{referenceId}}\", /* Can be an invoice no */\r\n                \"TimeStamp\": \"{{createdDateTime}}\" /* Must be the current date and time */\r\n            }\r\n        },\r\n        \"PaymentTransaction\": {\r\n            \"AmountsReq\": {\r\n                \"Currency\": \"USD\",\r\n                \"RequestedAmount\": \"20\"\r\n            }\r\n        },\r\n        \"PaymentData\": {\r\n            \"PaymentType\": \"NORMAL\"\r\n        }\r\n    }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{host-link}}/poscloud/nexo/v2/payment",
+          "host": [
+            "{{host-link}}"
+          ],
+          "path": [
+            "poscloud",
+            "nexo",
+            "v2",
+            "payment"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Sale Async",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "let referenceId = pm.environment.get(\"referenceId\")\r",
+              "console.log(\"referenceId = \" + referenceId)\r",
+              "pm.environment.set(\"referenceIdSaved\", referenceId)\r",
+              "console.log(\"referenceIdSaved = \" + pm.environment.get(\"referenceIdSaved\"))"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "strictSSL": false
+      },
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "description": "The type of message being sent",
+            "type": "text"
+          },
+          {
+            "key": "x-site-entity-id",
+            "value": "{{x-vfi-entity-id}}",
+            "description": "This is the entity UUID. The organization under which the POI exists",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"MessageHeader\": {\r\n        \"MessageClass\": \"SERVICE\",                              /* Do not change this for this request */\r\n        \"MessageCategory\": \"PAYMENT\",                           /* Do not change this for this request */\r\n        \"MessageType\": \"REQUEST\",                               /* Do not change this for this request */\r\n        \"ServiceID\": \"{{x-vfi-service-id}}\",                                  /* Have it as any unique ID */\r\n        \"SaleID\": \"{{x-vfi-sale-id}}\",                                /* Can have S/N or the POS/ECR or an ID */\r\n        \"POIID\": \"{{x-vfi-poiUid}}\"                             /* Got from Device Status API */\r\n    },\r\n    \"PaymentRequest\": {\r\n        \"SaleData\": {\r\n            \"OperatorID\": \"VERIFONE\",                           /* An optional field. Can have cashier ID */\r\n            \"SaleTransactionID\": {\r\n                \"TransactionID\": \"{{referenceId}}\",             /* Can be an invoice no */\r\n                \"TimeStamp\": \"{{createdDateTime}}\"              /* Must be the current date and time */\r\n            }\r\n         },\r\n        \"PaymentTransaction\": {\r\n            \"AmountsReq\": {\r\n                \"Currency\": \"USD\",\r\n                \"RequestedAmount\": \"8.88\",\r\n                \"TipAmount\": \"\",\r\n                \"TaxAmount\": \"\"\r\n            }\r\n        },\r\n        \"PaymentData\": {\r\n            \"PaymentType\": \"NORMAL\"\r\n        }\r\n    }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{host-link}}/poscloud/nexo/payment/async",
+          "host": [
+            "{{host-link}}"
+          ],
+          "path": [
+            "poscloud",
+            "nexo",
+            "payment",
+            "async"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Linked Refund",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "strictSSL": false
+      },
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "x-site-entity-id",
+            "value": "{{x-vfi-entity-id}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"MessageHeader\": {\r\n        \"MessageClass\": \"SERVICE\",\r\n        \"MessageCategory\": \"PAYMENT\",\r\n        \"MessageType\": \"REQUEST\",\r\n        \"ServiceID\": \"{{x-vfi-service-id}}\",\r\n        \"SaleID\": \"{{x-vfi-sale-id}}\",\r\n        \"POIID\": \"{{x-vfi-poiUid}}\"\r\n    },\r\n    \"PaymentRequest\": {\r\n        \"SaleData\": {\r\n            \"SaleTransactionID\": {\r\n                \"TransactionID\": \"{{referenceId}}\",\r\n                \"TimeStamp\": \"{{createdDateTime}}\"\r\n            },\r\n            \"SaleToAcquirerData\": \"tender=MOTO\",\r\n            \"SaleToPOIData\": \"{{saleToPoiData}}\"\r\n        },\r\n        \"PaymentTransaction\": {\r\n            \"AmountsReq\": {\r\n                \"Currency\": \"USD\",\r\n                \"RequestedAmount\": \"21\"\r\n            }\r\n        },\r\n        \"PaymentData\": {\r\n            \"PaymentType\": \"REFUND\",\r\n            \"SplitPaymentFlag\": true\r\n        }\r\n    }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{host-link}}/poscloud/nexo/v2/payment",
+          "host": [
+            "{{host-link}}"
+          ],
+          "path": [
+            "poscloud",
+            "nexo",
+            "v2",
+            "payment"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Linked Refund Async",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "strictSSL": false
+      },
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "x-site-entity-id",
+            "value": "{{x-vfi-entity-id}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"MessageHeader\": {\r\n        \"MessageClass\": \"SERVICE\",\r\n        \"MessageCategory\": \"PAYMENT\",\r\n        \"MessageType\": \"REQUEST\",\r\n        \"ServiceID\": \"{{x-vfi-service-id}}\",\r\n        \"SaleID\": \"{{x-vfi-sale-id}}\",\r\n        \"POIID\": \"{{x-vfi-poiUid}}\"\r\n    },\r\n    \"PaymentRequest\": {\r\n        \"SaleData\": {\r\n            \"SaleTransactionID\": {\r\n                \"TransactionID\": \"{{referenceId}}\",\r\n                \"TimeStamp\": \"{{createdDateTime}}\"\r\n            },\r\n            \"SaleToAcquirerData\": \"tender=MOTO\",\r\n            \"SaleToPOIData\": \"{{saleToPoiData}}\"\r\n        },\r\n        \"PaymentTransaction\": {\r\n            \"AmountsReq\": {\r\n                \"Currency\": \"USD\",\r\n                \"RequestedAmount\": \"2.67\"\r\n            }\r\n        },\r\n        \"PaymentData\": {\r\n            \"PaymentType\": \"REFUND\",\r\n            \"SplitPaymentFlag\": true\r\n        }\r\n    }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{host-link}}/poscloud/nexo/payment/async",
+          "host": [
+            "{{host-link}}"
+          ],
+          "path": [
+            "poscloud",
+            "nexo",
+            "payment",
+            "async"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Unlinked Refund",
+      "protocolProfileBehavior": {
+        "strictSSL": false
+      },
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "x-site-entity-id",
+            "value": "{{x-vfi-entity-id}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"MessageHeader\": {\r\n        \"MessageClass\": \"SERVICE\",\r\n        \"MessageCategory\": \"PAYMENT\",\r\n        \"MessageType\": \"REQUEST\",\r\n        \"ServiceID\": \"{{x-vfi-service-id}}\",\r\n        \"SaleID\": \"{{x-vfi-sale-id}}\",\r\n        \"POIID\": \"{{x-vfi-poiUid}}\"\r\n    },\r\n    \"PaymentRequest\": {\r\n        \"SaleData\": {\r\n            \"SaleTransactionID\": {\r\n                \"TransactionID\": \"{{referenceId}}\",\r\n                \"TimeStamp\": \"{{createdDateTime}}\"\r\n            },\r\n            \"SaleToAcquirerData\": \"tender=MOTO\"\r\n        },\r\n        \"PaymentTransaction\": {\r\n            \"AmountsReq\": {\r\n                \"Currency\": \"USD\",\r\n                \"RequestedAmount\": \"2.66\"\r\n            }\r\n        },\r\n        \"PaymentData\": {\r\n            \"PaymentType\": \"REFUND\",\r\n            \"SplitPaymentFlag\": true\r\n        }\r\n    }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{host-link}}/poscloud/nexo/v2/payment",
+          "host": [
+            "{{host-link}}"
+          ],
+          "path": [
+            "poscloud",
+            "nexo",
+            "v2",
+            "payment"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Unlinked Refund Async",
+      "protocolProfileBehavior": {
+        "strictSSL": false
+      },
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "x-site-entity-id",
+            "value": "{{x-vfi-entity-id}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"MessageHeader\": {\r\n        \"MessageClass\": \"SERVICE\",\r\n        \"MessageCategory\": \"PAYMENT\",\r\n        \"MessageType\": \"REQUEST\",\r\n        \"ServiceID\": \"{{x-vfi-service-id}}\",\r\n        \"SaleID\": \"{{x-vfi-sale-id}}\",\r\n        \"POIID\": \"{{x-vfi-poiUid}}\"\r\n    },\r\n    \"PaymentRequest\": {\r\n        \"SaleData\": {\r\n            \"SaleTransactionID\": {\r\n                \"TransactionID\": \"{{referenceId}}\",\r\n                \"TimeStamp\": \"{{createdDateTime}}\"\r\n            },\r\n            \"SaleToAcquirerData\": \"tender=MOTO\"\r\n        },\r\n        \"PaymentTransaction\": {\r\n            \"AmountsReq\": {\r\n                \"Currency\": \"USD\",\r\n                \"RequestedAmount\": \"2.67\"\r\n            }\r\n        },\r\n        \"PaymentData\": {\r\n            \"PaymentType\": \"REFUND\",\r\n            \"SplitPaymentFlag\": true\r\n        }\r\n    }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{host-link}}/poscloud/nexo/payment/async",
+          "host": [
+            "{{host-link}}"
+          ],
+          "path": [
+            "poscloud",
+            "nexo",
+            "payment",
+            "async"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "auth": {
+    "type": "basic",
+    "basic": [
+      {
+        "key": "password",
+        "value": "{{user_API}}",
+        "type": "string"
+      },
+      {
+        "key": "username",
+        "value": "{{user_ID}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [
+          "// Code to generate a 12 digit Random number for referenceId\r",
+          "const min = 100000000000; // Minimum 12-digit number\r",
+          "const max = 999999999999; // Maximum 12-digit number\r",
+          "const referenceId = Math.floor(Math.random() * (max - min + 1) + min);\r",
+          "\r",
+          "// Set the generated number as an environment variable\r",
+          "pm.environment.set('referenceId', referenceId.toString());\r",
+          "\r",
+          "// Get the current value of the running number from the environment\r",
+          "let runningNumber = pm.environment.get(\"runningNumber\");\r",
+          "\r",
+          "\r",
+          "// Code to generate the 6 digit running number for STAN\r",
+          "// Check if the running number exists\r",
+          "if (!runningNumber) {\r",
+          "    runningNumber = \"100000\"; // Set the initial value for the running number\r",
+          "}\r",
+          "\r",
+          "// Convert the running number to an integer and increment it by 1\r",
+          "runningNumber = parseInt(runningNumber) + 1;\r",
+          "\r",
+          "// Store the updated running number back to the environment\r",
+          "pm.environment.set(\"runningNumber\", runningNumber.toString());\r",
+          "\r",
+          "// Set the six-digit running number as a request variable\r",
+          "pm.variables.set(\"sixDigitNumber\", runningNumber.toString().padStart(6, \"0\"));\r",
+          "\r",
+          "pm.globals.set(\"sixDigitNumberSaved\", runningNumber.toString().padStart(6, \"0\"));\r",
+          "pm.globals.set(\"runningNumberSaved\", runningNumber.toString());"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}

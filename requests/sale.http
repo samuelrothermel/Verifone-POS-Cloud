@@ -1,0 +1,46 @@
+@baseUrl = {{$dotenv VF_BASE_URL}}
+@poiId = {{$dotenv VF_POI_ID}}
+@siteEntityId = {{$dotenv VF_SITE_ENTITY_ID}}
+@authorization = {{$dotenv VF_AUTHORIZATION}}
+@serialNumber = 552-322-068
+@saleId = VERIFONEPOS
+@serviceId = {{$guid}}
+@transactionId = {{$guid}}
+@timestamp = {{$datetime iso8601}}
+
+### Read-only status check for the P630. Confirm POIStatus[].POIID and POIState before sale.
+# Source: Health Check, https://docs.verifone.com/pos-cloud/pos-cloud-guide/readme-1/payment-operations/health-check
+GET {{baseUrl}}/poscloud/nexo/status/{{serialNumber}} HTTP/1.1
+Authorization: {{authorization}}
+
+### $1.00 USD sandbox sale on the configured POI.
+# Source: Sale, https://docs.verifone.com/pos-cloud/pos-cloud-guide/readme-1/payment-operations/payments/sale
+POST {{baseUrl}}/poscloud/nexo/v2/payment HTTP/1.1
+Authorization: {{authorization}}
+x-site-entity-id: {{siteEntityId}}
+Content-Type: application/json
+
+{
+  "MessageHeader": {
+    "MessageClass": "SERVICE",
+    "MessageCategory": "PAYMENT",
+    "MessageType": "REQUEST",
+    "POIID": "{{poiId}}",
+    "SaleID": "{{saleId}}",
+    "ServiceID": "{{serviceId}}"
+  },
+  "PaymentRequest": {
+    "SaleData": {
+      "SaleTransactionID": {
+        "TransactionID": "{{transactionId}}",
+        "TimeStamp": "{{timestamp}}"
+      }
+    },
+    "PaymentTransaction": {
+      "AmountsReq": {
+        "Currency": "USD",
+        "RequestedAmount": "1.00"
+      }
+    }
+  }
+}
